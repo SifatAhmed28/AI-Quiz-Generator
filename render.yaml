@@ -1,0 +1,13 @@
+services:
+  - type: web
+    name: quiz-generator
+    runtime: python
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
+    envVars:
+      - key: DATABASE_URL
+        value: postgresql://quiz_db_1ohu_user:K9ih0ilLtSD2YzWY3BYG8rxchaht3WE8@dpg-d268uvm3jp1c73coqbh0-a/quiz_db_1ohu
+      - key: GEMINI_API_KEY
+        value: your_gemini_api_key
+      - key: FLASK_SECRET_KEY
+        generateValue: true
