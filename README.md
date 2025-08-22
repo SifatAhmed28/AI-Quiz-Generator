@@ -5,7 +5,6 @@ An intelligent quiz generation platform that transforms your study materials int
 ![Python](https://img.shields.io/badge/Python-3.9+-blue.svg)
 ![Flask](https://img.shields.io/badge/Flask-3.1+-green.svg)
 ![Gemini](https://img.shields.io/badge/Gemini-2.0-orange.svg)
-![License](https://img.shields.io/badge/License-MIT-yellow.svg)
 
 ## ✨ Features
 
