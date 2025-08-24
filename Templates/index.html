@@ -1,0 +1,830 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NoteWise Quiz - Transform Documents into Intelligent Quizzes</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #6366f1;
+            --secondary-color: #8b5cf6;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --dark-bg: #0f172a;
+            --card-bg: #1e293b;
+            --border-color: #334155;
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --text-muted: #64748b;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-primary);
+            min-height: 100vh;
+            line-height: 1.6;
+        }
+
+        .navbar {
+            background: rgba(30, 41, 59, 0.95) !important;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            color: var(--primary-color) !important;
+            font-size: 1.5rem;
+        }
+
+        .nav-link {
+            color: var(--text-secondary) !important;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-color) !important;
+        }
+
+        .hero-section {
+            background: linear-gradient(135deg, rgba(99, 102, 241, 0.1), rgba(139, 92, 246, 0.1));
+            padding: 100px 0 80px;
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><circle cx="50" cy="50" r="1" fill="%236366f1" opacity="0.1"/></svg>') repeat;
+            background-size: 50px 50px;
+            animation: float 20s ease-in-out infinite;
+        }
+
+        @keyframes float {
+            0%, 100% { transform: translateY(0px); }
+            50% { transform: translateY(-10px); }
+        }
+
+        .hero-content {
+            position: relative;
+            z-index: 2;
+        }
+
+        .hero-title {
+            font-size: 4rem;
+            font-weight: 800;
+            margin-bottom: 1.5rem;
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+            text-shadow: none;
+        }
+
+        .hero-subtitle {
+            font-size: 1.3rem;
+            color: var(--text-secondary);
+            margin-bottom: 3rem;
+            max-width: 600px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+
+        .features-section {
+            background: var(--dark-bg);
+            padding: 80px 0;
+            position: relative;
+            margin-top: -50px;
+            z-index: 1;
+        }
+
+        .feature-card {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+            transform: scaleX(0);
+            transition: transform 0.4s ease;
+        }
+
+        .feature-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 40px rgba(99, 102, 241, 0.2);
+            border-color: var(--primary-color);
+        }
+
+        .feature-icon {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            width: 80px;
+            height: 80px;
+            border-radius: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin: 0 auto 1.5rem;
+            font-size: 2rem;
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.3);
+        }
+
+        .feature-title {
+            color: var(--text-primary);
+            font-size: 1.3rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+        }
+
+        .feature-description {
+            color: var(--text-secondary);
+            font-size: 1rem;
+        }
+
+        .instructions-section {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 25px;
+            padding: 3rem;
+            margin: 3rem 0;
+            position: relative;
+        }
+
+        .instructions-title {
+            color: var(--primary-color);
+            font-size: 2rem;
+            font-weight: 700;
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+
+        .instruction-step {
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 15px;
+            padding: 1.5rem;
+            margin-bottom: 1.5rem;
+            display: flex;
+            align-items: center;
+            transition: all 0.3s ease;
+        }
+
+        .instruction-step:hover {
+            background: rgba(99, 102, 241, 0.15);
+            transform: translateX(10px);
+        }
+
+        .step-number {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            font-size: 1.2rem;
+            margin-right: 1.5rem;
+            flex-shrink: 0;
+            box-shadow: 0 5px 15px rgba(99, 102, 241, 0.3);
+        }
+
+        .step-content h6 {
+            color: var(--text-primary);
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .step-content p {
+            color: var(--text-secondary);
+            margin: 0;
+        }
+
+        .upload-section {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 25px;
+            padding: 3rem;
+            margin: 3rem 0;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .section-title {
+            color: var(--text-primary);
+            font-size: 2rem;
+            font-weight: 700;
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+
+        .upload-area {
+            border: 3px dashed var(--border-color);
+            border-radius: 20px;
+            padding: 3rem;
+            text-align: center;
+            transition: all 0.3s ease;
+            cursor: pointer;
+            background: rgba(99, 102, 241, 0.05);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .upload-area::before {
+            content: '';
+            position: absolute;
+            top: -50%;
+            left: -50%;
+            width: 200%;
+            height: 200%;
+            background: linear-gradient(45deg, transparent, rgba(99, 102, 241, 0.1), transparent);
+            transform: rotate(45deg);
+            transition: all 0.3s ease;
+            opacity: 0;
+        }
+
+        .upload-area:hover::before {
+            opacity: 1;
+            animation: shimmer 2s ease-in-out infinite;
+        }
+
+        @keyframes shimmer {
+            0% { transform: translateX(-100%) translateY(-100%) rotate(45deg); }
+            100% { transform: translateX(100%) translateY(100%) rotate(45deg); }
+        }
+
+        .upload-area.dragover {
+            border-color: var(--primary-color);
+            background: rgba(99, 102, 241, 0.1);
+            transform: scale(1.02);
+        }
+
+        .upload-area:hover {
+            border-color: var(--primary-color);
+            background: rgba(99, 102, 241, 0.08);
+        }
+
+        .upload-icon {
+            font-size: 4rem;
+            color: var(--primary-color);
+            margin-bottom: 1rem;
+        }
+
+        .upload-title {
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .upload-subtitle {
+            color: var(--text-secondary);
+            margin-bottom: 2rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            padding: 15px 30px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1.1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
+        }
+
+        .quiz-controls {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin: 2rem 0;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .form-control, .form-select {
+            background: rgba(15, 23, 42, 0.5);
+            border: 2px solid var(--border-color);
+            border-radius: 15px;
+            padding: 15px 20px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus, .form-select:focus {
+            background: rgba(15, 23, 42, 0.8);
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(99, 102, 241, 0.25);
+            color: var(--text-primary);
+        }
+
+        .form-label {
+            color: var(--text-primary);
+            font-weight: 600;
+            margin-bottom: 0.8rem;
+        }
+
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 3rem;
+        }
+
+        .spinner-border {
+            color: var(--primary-color);
+        }
+
+        .alert {
+            border-radius: 15px;
+            border: none;
+            padding: 1.2rem 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success-color);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .alert-danger {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger-color);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .supported-formats {
+            background: rgba(99, 102, 241, 0.05);
+            border: 1px solid rgba(99, 102, 241, 0.1);
+            border-radius: 15px;
+            padding: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .supported-formats small {
+            color: var(--text-secondary);
+            line-height: 1.5;
+        }
+
+        @media (max-width: 768px) {
+            .hero-title {
+                font-size: 2.5rem;
+            }
+
+            .hero-subtitle {
+                font-size: 1.1rem;
+            }
+
+            .upload-area {
+                padding: 2rem 1rem;
+            }
+
+            .feature-card {
+                padding: 2rem;
+            }
+
+            .instructions-section {
+                padding: 2rem;
+            }
+
+            .instruction-step {
+                padding: 1rem;
+            }
+
+            .step-number {
+                width: 40px;
+                height: 40px;
+                font-size: 1rem;
+                margin-right: 1rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-brain me-2"></i>NoteWise Quiz
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/profile">
+                            <i class="fas fa-user me-1"></i>Profile
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/logout">
+                            <i class="fas fa-sign-out-alt me-1"></i>Logout
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-content">
+            <div class="container">
+                <h1 class="hero-title">NoteWise Quiz</h1>
+                <p class="hero-subtitle">Transform your documents into intelligent quizzes with AI-powered content analysis and smart question generation</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Features Section -->
+    <section class="features-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4 col-sm-6 mb-4">
+                    <div class="feature-card text-center">
+                        <div class="feature-icon">
+                            <i class="fas fa-file-pdf"></i>
+                        </div>
+                        <h5 class="feature-title">PDF Documents</h5>
+                        <p class="feature-description">Extract and analyze text from any PDF document with advanced parsing capabilities</p>
+                    </div>
+                </div>
+                <div class="col-md-4 col-sm-6 mb-4">
+                    <div class="feature-card text-center">
+                        <div class="feature-icon">
+                            <i class="fas fa-file-powerpoint"></i>
+                        </div>
+                        <h5 class="feature-title">PowerPoint</h5>
+                        <p class="feature-description">Extract content from presentations and slide decks seamlessly</p>
+                    </div>
+                </div>
+                <div class="col-md-4 col-sm-6 mb-4">
+                    <div class="feature-card text-center">
+                        <div class="feature-icon">
+                            <i class="fas fa-file-word"></i>
+                        </div>
+                        <h5 class="feature-title">Word Documents</h5>
+                        <p class="feature-description">Process DOCX files and extract comprehensive text content</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    
+
+    <!-- Main Upload Section -->
+    <div class="container">
+        <div class="upload-section">
+            <h2 class="section-title">Upload Your Document</h2>
+
+            <!-- File Upload Area -->
+            <div class="upload-area" id="upload-area">
+                <div class="upload-icon">
+                    <i class="fas fa-cloud-upload-alt"></i>
+                </div>
+                <h4 class="upload-title">Drag & Drop Your File Here</h4>
+                <p class="upload-subtitle">or click to browse</p>
+                <input type="file" id="file-input" class="d-none" accept=".pdf,.docx,.doc,.pptx,.ppt">
+                <button class="btn btn-primary" onclick="document.getElementById('file-input').click()">
+                    <i class="fas fa-folder-open me-2"></i>Choose File
+                </button>
+                <div class="supported-formats">
+                    <small>
+                        <strong>Supported formats:</strong> PDF, Word (DOCX), PowerPoint (PPTX)<br>
+                        <strong>Maximum file size:</strong> 25MB
+                    </small>
+                </div>
+            </div>
+
+            <!-- Upload Progress -->
+            <div class="loading-spinner" id="upload-progress">
+                <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2">Uploading and processing your document...</p>
+                <div class="progress mt-2">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 0%"></div>
+                </div>
+            </div>
+
+            <!-- Quiz Generation Controls -->
+            <div class="quiz-controls" id="quiz-controls" style="display: none;">
+                <h4 class="mb-4">
+                    <i class="fas fa-cogs me-2"></i>Configure Your Quiz
+                </h4>
+                <div class="row">
+                    <div class="col-md-4">
+                        <label for="num-questions" class="form-label">Number of Questions</label>
+                        <input type="number" class="form-control" id="num-questions" min="1" max="30" value="10">
+                    </div>
+                    <div class="col-md-4">
+                        <label for="question-type" class="form-label">Question Type</label>
+                        <select class="form-select" id="question-type">
+                            <option value="multiple-choice">Multiple Choice</option>
+                            <option value="true-false">True/False</option>
+                        </select>
+                    </div>
+                    <div class="col-md-4">
+                        <label for="quiz-timer" class="form-label">Quiz Timer (minutes)</label>
+                        <select class="form-select" id="quiz-timer">
+                            <option value="0">No Timer</option>
+                            <option value="5">5 Minutes</option>
+                            <option value="10">10 Minutes</option>
+                            <option value="15">15 Minutes</option>
+                            <option value="20">20 Minutes</option>
+                            <option value="25">25 Minutes</option>
+                            <option value="30">30 Minutes</option>
+                            <option value="35">35 Minutes</option>
+                            <option value="40">40 Minutes</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="text-center mt-4">
+                    <button class="btn btn-primary btn-lg" id="generate-btn">
+                        <i class="fas fa-magic me-2"></i>Generate Smart Quiz
+                    </button>
+                </div>
+            </div>
+
+            <!-- Generation Progress -->
+            <div class="loading-spinner" id="generation-progress">
+                <div class="spinner-border" role="status">
+                    <span class="visually-hidden">Loading...</span>
+                </div>
+                <p class="mt-2">Generating your intelligent quiz...</p>
+                <div class="progress mt-2">
+                    <div class="progress-bar progress-bar-striped progress-bar-animated" role="progressbar" style="width: 100%"></div>
+                </div>
+            </div>
+
+            <!-- Success Message -->
+            <div class="alert alert-success" id="success-message" style="display: none;">
+                <i class="fas fa-check-circle me-2"></i>
+                <span id="success-text"></span>
+            </div>
+
+            <!-- Error Message -->
+            <div class="alert alert-danger" id="error-message" style="display: none;">
+                <i class="fas fa-exclamation-triangle me-2"></i>
+                <span id="error-text"></span>
+            </div>
+        </div>
+    </div>
+<!-- Instructions Section -->
+    <div class="container my-5">
+        <div class="instructions-section">
+            <h3 class="instructions-title">
+                <i class="fas fa-rocket me-2"></i>How to Create Your Smart Quiz
+            </h3>
+            <div class="row">
+                <div class="col-lg-6">
+                    <div class="instruction-step">
+                        <div class="step-number">1</div>
+                        <div class="step-content">
+                            <h6>Upload Your Document</h6>
+                            <p>Choose PDF, Word, or PowerPoint file (max 25MB)</p>
+                        </div>
+                    </div>
+                    <div class="instruction-step">
+                        <div class="step-number">2</div>
+                        <div class="step-content">
+                            <h6>Configure Your Quiz</h6>
+                            <p>Select 1-30 questions, question type, and set timing</p>
+                        </div>
+                    </div>
+                    <div class="instruction-step">
+                        <div class="step-number">3</div>
+                        <div class="step-content">
+                            <h6>AI Generation</h6>
+                            <p>Our AI analyzes content and creates intelligent questions</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="instruction-step">
+                        <div class="step-number">4</div>
+                        <div class="step-content">
+                            <h6>Take Your Quiz</h6>
+                            <p>Answer questions with navigation and timing features</p>
+                        </div>
+                    </div>
+                    <div class="instruction-step">
+                        <div class="step-number">5</div>
+                        <div class="step-content">
+                            <h6>Review Results</h6>
+                            <p>Get detailed feedback and performance analytics</p>
+                        </div>
+                    </div>
+                    <div class="instruction-step">
+                        <div class="step-number">6</div>
+                        <div class="step-content">
+                            <h6>Share & Export</h6>
+                            <p>Download PDF or email your quiz and answers</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const uploadArea = document.getElementById('upload-area');
+        const fileInput = document.getElementById('file-input');
+        const uploadProgress = document.getElementById('upload-progress');
+        const quizControls = document.getElementById('quiz-controls');
+        const generationProgress = document.getElementById('generation-progress');
+        const successMessage = document.getElementById('success-message');
+        const errorMessage = document.getElementById('error-message');
+        const generateBtn = document.getElementById('generate-btn');
+
+        // Drag and drop functionality
+        uploadArea.addEventListener('dragover', (e) => {
+            e.preventDefault();
+            uploadArea.classList.add('dragover');
+        });
+
+        uploadArea.addEventListener('dragleave', () => {
+            uploadArea.classList.remove('dragover');
+        });
+
+        uploadArea.addEventListener('drop', (e) => {
+            e.preventDefault();
+            uploadArea.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                handleFileUpload(files[0]);
+            }
+        });
+
+        fileInput.addEventListener('change', (e) => {
+            if (e.target.files.length > 0) {
+                handleFileUpload(e.target.files[0]);
+            }
+        });
+
+        function showError(message) {
+            hideAllMessages();
+            document.getElementById('error-text').textContent = message;
+            errorMessage.style.display = 'block';
+        }
+
+        function showSuccess(message) {
+            hideAllMessages();
+            document.getElementById('success-text').textContent = message;
+            successMessage.style.display = 'block';
+        }
+
+        function hideAllMessages() {
+            successMessage.style.display = 'none';
+            errorMessage.style.display = 'none';
+            uploadProgress.style.display = 'none';
+            generationProgress.style.display = 'none';
+        }
+
+        function handleFileUpload(file) {
+            // Validate file size
+            if (file.size > 25 * 1024 * 1024) {
+                showError('File size exceeds 25MB limit. Please choose a smaller file.');
+                return;
+            }
+
+            // Validate file type
+            const allowedExtensions = ['pdf', 'docx', 'doc', 'pptx', 'ppt'];
+            const fileExtension = file.name.split('.').pop().toLowerCase();
+
+            if (!allowedExtensions.includes(fileExtension)) {
+                showError('Unsupported file type. Please upload PDF, Word, or PowerPoint files.');
+                return;
+            }
+
+            hideAllMessages();
+            uploadProgress.style.display = 'block';
+
+            const formData = new FormData();
+            formData.append('file', file);
+
+            fetch('/api/upload', {
+                method: 'POST',
+                body: formData
+            })
+            .then(response => response.json())
+            .then(data => {
+                uploadProgress.style.display = 'none';
+
+                if (data.error) {
+                    showError(data.error);
+                } else {
+                    showSuccess(data.message || 'File uploaded successfully!');
+                    quizControls.style.display = 'block';
+                    uploadArea.style.display = 'none';
+                }
+            })
+            .catch(error => {
+                uploadProgress.style.display = 'none';
+                showError('Upload failed. Please try again.');
+                console.error('Upload error:', error);
+            });
+        }
+
+        generateBtn.addEventListener('click', () => {
+            const numQuestions = parseInt(document.getElementById('num-questions').value);
+            const questionType = document.getElementById('question-type').value;
+            const quizTimer = parseInt(document.getElementById('quiz-timer').value);
+
+            if (numQuestions < 1 || numQuestions > 30) {
+                showError('Please enter a number between 1 and 30 for questions.');
+                return;
+            }
+
+            hideAllMessages();
+            generationProgress.style.display = 'block';
+            generateBtn.disabled = true;
+
+            // Store timer in session
+            if (quizTimer > 0) {
+                sessionStorage.setItem('quizTimer', quizTimer);
+            } else {
+                sessionStorage.removeItem('quizTimer');
+            }
+
+            fetch('/api/generate', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    num_questions: numQuestions,
+                    question_type: questionType,
+                    quiz_timer: quizTimer
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                generationProgress.style.display = 'none';
+                generateBtn.disabled = false;
+
+                if (data.error) {
+                    showError(data.error);
+                } else {
+                    showSuccess(data.message || 'Quiz generated successfully!');
+                    setTimeout(() => {
+                        window.location.href = '/quiz';
+                    }, 2000);
+                }
+            })
+            .catch(error => {
+                generationProgress.style.display = 'none';
+                generateBtn.disabled = false;
+                showError('Quiz generation failed. Please try again.');
+                console.error('Generation error:', error);
+            });
+        });
+
+        // Reset form when page loads
+        document.addEventListener('DOMContentLoaded', () => {
+            hideAllMessages();
+            quizControls.style.display = 'none';
+        });
+    </script>
+</body>
+</html>

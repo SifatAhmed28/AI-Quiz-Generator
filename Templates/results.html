@@ -1,0 +1,894 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiz Results - NoteWise Quiz</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <style>
+        :root {
+            --primary-color: #6366f1;
+            --secondary-color: #8b5cf6;
+            --success-color: #10b981;
+            --warning-color: #f59e0b;
+            --danger-color: #ef4444;
+            --dark-bg: #0f172a;
+            --card-bg: #1e293b;
+            --border-color: #334155;
+            --text-primary: #f8fafc;
+            --text-secondary: #cbd5e1;
+            --text-muted: #64748b;
+        }
+
+        body {
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+            background: var(--dark-bg);
+            color: var(--text-primary);
+            min-height: 100vh;
+            padding-top: 80px;
+        }
+
+        .navbar {
+            background: rgba(30, 41, 59, 0.95) !important;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .navbar-brand {
+            font-weight: 700;
+            color: var(--primary-color) !important;
+            font-size: 1.5rem;
+        }
+
+        .nav-link {
+            color: var(--text-secondary) !important;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-link:hover {
+            color: var(--primary-color) !important;
+        }
+
+        .results-container {
+            max-width: 1000px;
+            margin: 2rem auto;
+            padding: 0 1rem;
+        }
+
+        .results-header {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 25px;
+            padding: 3rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            text-align: center;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .results-header::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 4px;
+            background: linear-gradient(90deg, var(--success-color), #059669);
+        }
+
+        .results-icon {
+            background: linear-gradient(135deg, var(--success-color), #059669);
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 3rem;
+            color: white;
+            margin: 0 auto 2rem;
+            box-shadow: 0 10px 25px rgba(16, 185, 129, 0.3);
+            animation: pulse 2s infinite;
+        }
+
+        @keyframes pulse {
+            0%, 100% { transform: scale(1); }
+            50% { transform: scale(1.05); }
+        }
+
+        .results-title {
+            color: var(--text-primary);
+            font-size: 2.5rem;
+            font-weight: 700;
+            margin-bottom: 1rem;
+        }
+
+        .results-subtitle {
+            color: var(--text-secondary);
+            font-size: 1.2rem;
+            margin-bottom: 0;
+        }
+
+        .score-overview {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .score-overview::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        }
+
+        .score-stats {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .stat-item {
+            text-align: center;
+            padding: 2rem;
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+            border-radius: 15px;
+            transition: all 0.3s ease;
+        }
+
+        .stat-item:hover {
+            background: rgba(99, 102, 241, 0.15);
+            transform: translateY(-5px);
+        }
+
+        .stat-value {
+            font-size: 3rem;
+            font-weight: bold;
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            display: block;
+        }
+
+        .stat-label {
+            color: var(--text-secondary);
+            font-weight: 600;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            font-size: 0.9rem;
+        }
+
+        .performance-meter {
+            background: rgba(51, 65, 85, 0.5);
+            border-radius: 50px;
+            height: 20px;
+            overflow: hidden;
+            margin: 2rem 0;
+            position: relative;
+        }
+
+        .performance-fill {
+            height: 100%;
+            border-radius: 50px;
+            transition: width 2s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .performance-fill.excellent {
+            background: linear-gradient(90deg, var(--success-color), #059669);
+        }
+
+        .performance-fill.good {
+            background: linear-gradient(90deg, #22c55e, var(--success-color));
+        }
+
+        .performance-fill.average {
+            background: linear-gradient(90deg, var(--warning-color), #d97706);
+        }
+
+        .performance-fill.poor {
+            background: linear-gradient(90deg, var(--danger-color), #dc2626);
+        }
+
+        .performance-fill::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: linear-gradient(45deg, 
+                transparent 33%, 
+                rgba(255,255,255,0.1) 33%, 
+                rgba(255,255,255,0.1) 66%, 
+                transparent 66%);
+            background-size: 20px 20px;
+            animation: moveStripes 1s linear infinite;
+        }
+
+        @keyframes moveStripes {
+            0% { background-position: 0 0; }
+            100% { background-position: 20px 0; }
+        }
+
+        .performance-text {
+            text-align: center;
+            margin-top: 1rem;
+            font-size: 1.1rem;
+            font-weight: 600;
+        }
+
+        .detailed-results {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 2.5rem;
+            margin-bottom: 2rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .detailed-results::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        }
+
+        .section-title {
+            color: var(--text-primary);
+            font-size: 1.5rem;
+            font-weight: 600;
+            margin-bottom: 2rem;
+            display: flex;
+            align-items: center;
+        }
+
+        .section-title i {
+            color: var(--primary-color);
+            margin-right: 0.5rem;
+        }
+
+        .question-result {
+            background: rgba(99, 102, 241, 0.05);
+            border: 1px solid rgba(99, 102, 241, 0.1);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .question-result:hover {
+            background: rgba(99, 102, 241, 0.1);
+            transform: translateX(5px);
+        }
+
+        .question-result.correct {
+            border-left: 4px solid var(--success-color);
+        }
+
+        .question-result.incorrect {
+            border-left: 4px solid var(--danger-color);
+        }
+
+        .question-number {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            position: absolute;
+            top: 1.5rem;
+            right: 1.5rem;
+            box-shadow: 0 5px 15px rgba(99, 102, 241, 0.3);
+        }
+
+        .question-text {
+            color: var(--text-primary);
+            font-size: 1.1rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            padding-right: 60px;
+            line-height: 1.6;
+        }
+
+        .answer-row {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.8rem;
+            padding: 0.8rem 1rem;
+            border-radius: 10px;
+            font-weight: 500;
+        }
+
+        .answer-row.your-answer {
+            background: rgba(99, 102, 241, 0.1);
+            border: 1px solid rgba(99, 102, 241, 0.2);
+        }
+
+        .answer-row.correct-answer {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .answer-row.your-answer.incorrect {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .answer-label {
+            font-weight: 600;
+            margin-right: 1rem;
+            min-width: 120px;
+        }
+
+        .answer-label.your-answer {
+            color: var(--primary-color);
+        }
+
+        .answer-label.correct {
+            color: var(--success-color);
+        }
+
+        .answer-label.incorrect {
+            color: var(--danger-color);
+        }
+
+        .result-icon {
+            margin-left: auto;
+            font-size: 1.5rem;
+        }
+
+        .result-icon.correct {
+            color: var(--success-color);
+        }
+
+        .result-icon.incorrect {
+            color: var(--danger-color);
+        }
+
+        .actions-section {
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            padding: 2.5rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .actions-section::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            height: 3px;
+            background: linear-gradient(90deg, var(--primary-color), var(--secondary-color));
+        }
+
+        .action-buttons {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            border: none;
+            padding: 15px 25px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 15px rgba(99, 102, 241, 0.3);
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 10px 25px rgba(99, 102, 241, 0.4);
+            color: white;
+        }
+
+        .btn-outline-primary {
+            border: 2px solid var(--primary-color);
+            color: var(--primary-color);
+            background: transparent;
+            padding: 15px 25px;
+            border-radius: 50px;
+            font-weight: 600;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+            text-decoration: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .btn-outline-primary:hover {
+            background: var(--primary-color);
+            color: white;
+            transform: translateY(-2px);
+        }
+
+        .share-form {
+            background: rgba(99, 102, 241, 0.05);
+            border: 1px solid rgba(99, 102, 241, 0.1);
+            border-radius: 15px;
+            padding: 2rem;
+            margin-top: 2rem;
+        }
+
+        .form-control {
+            background: rgba(15, 23, 42, 0.5);
+            border: 2px solid var(--border-color);
+            border-radius: 15px;
+            color: var(--text-primary);
+            font-size: 1rem;
+            padding: 12px 15px;
+            transition: all 0.3s ease;
+        }
+
+        .form-control:focus {
+            background: rgba(15, 23, 42, 0.8);
+            border-color: var(--primary-color);
+            box-shadow: 0 0 0 0.2rem rgba(99, 102, 241, 0.25);
+            color: var(--text-primary);
+        }
+
+        .loading-spinner {
+            display: none;
+            text-align: center;
+            padding: 3rem;
+        }
+
+        .spinner-border {
+            color: var(--primary-color);
+        }
+
+        .alert {
+            border-radius: 15px;
+            border: none;
+            padding: 1.2rem 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .alert-success {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--success-color);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+        }
+
+        .alert-danger {
+            background: rgba(239, 68, 68, 0.1);
+            color: var(--danger-color);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+        }
+
+        .no-results-message {
+            text-align: center;
+            padding: 4rem;
+            background: var(--card-bg);
+            border: 1px solid var(--border-color);
+            border-radius: 20px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+        }
+
+        .empty-state-icon {
+            font-size: 5rem;
+            color: var(--text-muted);
+            margin-bottom: 1.5rem;
+            opacity: 0.7;
+        }
+
+        @media (max-width: 768px) {
+            .results-container {
+                padding: 0 0.5rem;
+            }
+
+            .results-header {
+                padding: 2rem;
+            }
+
+            .score-overview, .detailed-results, .actions-section {
+                padding: 2rem;
+            }
+
+            .score-stats {
+                grid-template-columns: 1fr;
+            }
+
+            .question-result {
+                padding: 1.5rem;
+            }
+
+            .question-text {
+                padding-right: 0;
+                margin-bottom: 2rem;
+            }
+
+            .question-number {
+                position: static;
+                margin-bottom: 1rem;
+            }
+
+            .action-buttons {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar navbar-expand-lg navbar-dark fixed-top">
+        <div class="container">
+            <a class="navbar-brand" href="/">
+                <i class="fas fa-brain me-2"></i>NoteWise Quiz
+            </a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav ms-auto">
+                    <li class="nav-item">
+                        <a class="nav-link" href="/">
+                            <i class="fas fa-home me-1"></i>Home
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/profile">
+                            <i class="fas fa-user me-1"></i>Profile
+                        </a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="/logout">
+                            <i class="fas fa-sign-out-alt me-1"></i>Logout
+                        </a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <div class="results-container">
+        <!-- Loading State -->
+        <div class="loading-spinner" id="loading-spinner">
+            <div class="spinner-border" role="status">
+                <span class="visually-hidden">Loading...</span>
+            </div>
+            <p class="mt-2">Please wait while we process your quiz performance</p>
+        </div>
+
+        <!-- No Results State -->
+        <div class="no-results-message" id="no-results-message" style="display: none;">
+            <div class="empty-state-icon">
+                <i class="fas fa-chart-line"></i>
+            </div>
+            <h3>No Results Available</h3>
+            <p class="text-muted mb-4">You haven't completed a quiz yet. Take a quiz to see your results here.</p>
+            <a href="/" class="btn btn-primary">
+                <i class="fas fa-upload me-2"></i>Start New Quiz
+            </a>
+        </div>
+
+        <!-- Results Header -->
+        <div class="results-header" id="results-header" style="display: none;">
+            <div class="results-icon">
+                <i class="fas fa-trophy"></i>
+            </div>
+            <h1 class="results-title">Quiz Completed!</h1>
+            <p class="results-subtitle">Comprehensive analysis of your quiz performance</p>
+        </div>
+
+        <!-- Score Overview -->
+        <div class="score-overview" id="score-overview" style="display: none;">
+            <div class="score-stats">
+                <div class="stat-item">
+                    <span class="stat-value" id="score-display">0</span>
+                    <div class="stat-label">Score</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="total-display">0</span>
+                    <div class="stat-label">Total Questions</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="percentage-display">0%</span>
+                    <div class="stat-label">Percentage</div>
+                </div>
+                <div class="stat-item">
+                    <span class="stat-value" id="correct-display">0</span>
+                    <div class="stat-label">Correct Answers</div>
+                </div>
+            </div>
+
+            <div class="performance-meter">
+                <div class="performance-fill" id="performance-fill" style="width: 0%"></div>
+            </div>
+            <div class="performance-text" id="performance-text">
+                You've demonstrated a strong understanding of the material.
+            </div>
+        </div>
+
+        <!-- Detailed Results -->
+        <div class="detailed-results" id="detailed-results" style="display: none;">
+            <h3 class="section-title">
+                <i class="fas fa-list-check"></i>Detailed Question Review
+            </h3>
+            <div id="questions-review">
+                <!-- Questions will be populated here -->
+            </div>
+        </div>
+
+        <!-- Actions Section -->
+        <div class="actions-section" id="actions-section" style="display: none;">
+            <h3 class="section-title">
+                <i class="fas fa-tools"></i>What's Next?
+            </h3>
+
+            <div class="action-buttons">
+                <a href="/" class="btn btn-primary">
+                    <i class="fas fa-plus me-2"></i>New Quiz
+                </a>
+                <button class="btn btn-outline-primary" onclick="downloadQuiz()">
+                    <i class="fas fa-download me-2"></i>Download Questions
+                </button>
+                <button class="btn btn-outline-primary" onclick="downloadAnswers()">
+                    <i class="fas fa-key me-2"></i>Download Answers
+                </button>
+                <a href="/profile" class="btn btn-outline-primary">
+                    <i class="fas fa-history me-2"></i>View History
+                </a>
+            </div>
+
+            <!-- Share Form -->
+            <div class="share-form">
+                <h5><i class="fas fa-share me-2"></i>Share Your Quiz</h5>
+                <p class="text-muted mb-3">Enter email address to share your quiz and answer key:</p>
+                <div class="input-group">
+                    <input type="email" class="form-control" id="share-email" placeholder="Enter email address">
+                    <button class="btn btn-primary" onclick="shareQuiz()">
+                        <i class="fas fa-paper-plane me-2"></i>Send
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Error/Success Messages -->
+        <div class="alert alert-danger" id="error-message" style="display: none;">
+            <i class="fas fa-exclamation-triangle me-2"></i>
+            <span id="error-text"></span>
+        </div>
+
+        <div class="alert alert-success" id="success-message" style="display: none;">
+            <i class="fas fa-check-circle me-2"></i>
+            <span id="success-text"></span>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        let quizResults = null;
+
+        // DOM Elements
+        const loadingSpinner = document.getElementById('loading-spinner');
+        const noResultsMessage = document.getElementById('no-results-message');
+        const resultsHeader = document.getElementById('results-header');
+        const scoreOverview = document.getElementById('score-overview');
+        const detailedResults = document.getElementById('detailed-results');
+        const actionsSection = document.getElementById('actions-section');
+        const errorMessage = document.getElementById('error-message');
+        const successMessage = document.getElementById('success-message');
+
+        function showError(message) {
+            hideAllMessages();
+            document.getElementById('error-text').textContent = message;
+            errorMessage.style.display = 'block';
+        }
+
+        function showSuccess(message) {
+            hideAllMessages();
+            document.getElementById('success-text').textContent = message;
+            successMessage.style.display = 'block';
+        }
+
+        function hideAllMessages() {
+            errorMessage.style.display = 'none';
+            successMessage.style.display = 'none';
+        }
+
+        function getPerformanceLevel(percentage) {
+            if (percentage >= 90) return { level: 'excellent', text: 'Excellent! Outstanding performance!' };
+            if (percentage >= 75) return { level: 'good', text: 'Great job! You have a strong understanding of the material.' };
+            if (percentage >= 60) return { level: 'average', text: 'Good work! There\'s room for improvement.' };
+            return { level: 'poor', text: 'Keep studying! Practice makes perfect.' };
+        }
+
+        function animateValue(element, start, end, duration) {
+            const startTimestamp = performance.now();
+            const step = (timestamp) => {
+                const elapsed = timestamp - startTimestamp;
+                const progress = Math.min(elapsed / duration, 1);
+                const value = Math.floor(progress * (end - start) + start);
+                element.textContent = end.toString().includes('%') ? value + '%' : value;
+                if (progress < 1) {
+                    requestAnimationFrame(step);
+                }
+            };
+            requestAnimationFrame(step);
+        }
+
+        function displayResults(data) {
+            // Update score displays with animations
+            setTimeout(() => animateValue(document.getElementById('score-display'), 0, data.score, 1500), 500);
+            setTimeout(() => animateValue(document.getElementById('total-display'), 0, data.total, 1500), 600);
+            setTimeout(() => animateValue(document.getElementById('percentage-display'), 0, data.percentage, 1500), 700);
+            setTimeout(() => animateValue(document.getElementById('correct-display'), 0, data.score, 1500), 800);
+
+            // Update performance meter
+            const performance = getPerformanceLevel(data.percentage);
+            const performanceFill = document.getElementById('performance-fill');
+            const performanceText = document.getElementById('performance-text');
+
+            setTimeout(() => {
+                performanceFill.style.width = data.percentage + '%';
+                performanceFill.className = `performance-fill ${performance.level}`;
+                performanceText.textContent = performance.text;
+            }, 1000);
+
+            // Display detailed results
+            const questionsReview = document.getElementById('questions-review');
+            questionsReview.innerHTML = '';
+
+            data.results.forEach((result, index) => {
+                const questionDiv = document.createElement('div');
+                questionDiv.className = `question-result ${result.ok ? 'correct' : 'incorrect'}`;
+
+                const resultIcon = result.ok ? 
+                    '<i class="fas fa-check-circle result-icon correct"></i>' : 
+                    '<i class="fas fa-times-circle result-icon incorrect"></i>';
+
+                questionDiv.innerHTML = `
+                    <div class="question-number">${index + 1}</div>
+                    <div class="question-text">${result.q}</div>
+                    <div class="answer-row your-answer ${result.ok ? '' : 'incorrect'}">
+                        <span class="answer-label ${result.ok ? 'correct' : 'incorrect'}">Your Answer:</span>
+                        <span>${result.user || 'Not answered'}</span>
+                        ${resultIcon}
+                    </div>
+                    ${!result.ok ? `
+                        <div class="answer-row correct-answer">
+                            <span class="answer-label correct">Correct Answer:</span>
+                            <span>${result.correct}</span>
+                            <i class="fas fa-lightbulb result-icon correct"></i>
+                        </div>
+                    ` : ''}
+                `;
+
+                questionsReview.appendChild(questionDiv);
+            });
+
+            // Show all sections with staggered animations
+            loadingSpinner.style.display = 'none';
+            resultsHeader.style.display = 'block';
+
+            setTimeout(() => scoreOverview.style.display = 'block', 300);
+            setTimeout(() => detailedResults.style.display = 'block', 600);
+            setTimeout(() => actionsSection.style.display = 'block', 900);
+        }
+
+        function downloadQuiz() {
+            window.open('/api/download/quiz.pdf', '_blank');
+        }
+
+        function downloadAnswers() {
+            window.open('/api/download/answers.pdf', '_blank');
+        }
+
+        function shareQuiz() {
+            const email = document.getElementById('share-email').value.trim();
+
+            if (!email) {
+                showError('Please enter an email address.');
+                return;
+            }
+
+            if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
+                showError('Please enter a valid email address.');
+                return;
+            }
+
+            const shareButton = event.target;
+            const originalText = shareButton.innerHTML;
+            shareButton.innerHTML = '<i class="fas fa-spinner fa-spin me-2"></i>Sending...';
+            shareButton.disabled = true;
+
+            fetch('/api/share', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ email: email })
+            })
+            .then(response => response.json())
+            .then(data => {
+                shareButton.innerHTML = originalText;
+                shareButton.disabled = false;
+
+                if (data.sent) {
+                    showSuccess(data.message || 'Quiz shared successfully!');
+                    document.getElementById('share-email').value = '';
+                } else {
+                    showError(data.error || 'Failed to share quiz.');
+                }
+            })
+            .catch(error => {
+                shareButton.innerHTML = originalText;
+                shareButton.disabled = false;
+                showError('Failed to share quiz. Please try again.');
+                console.error('Share error:', error);
+            });
+        }
+
+        // Load results on page load
+        document.addEventListener('DOMContentLoaded', () => {
+            loadingSpinner.style.display = 'block';
+
+            fetch('/api/results')
+            .then(response => response.json())
+            .then(data => {
+                if (data.error) {
+                    loadingSpinner.style.display = 'none';
+                    noResultsMessage.style.display = 'block';
+                } else {
+                    quizResults = data;
+                    displayResults(data);
+                }
+            })
+            .catch(error => {
+                loadingSpinner.style.display = 'none';
+                noResultsMessage.style.display = 'block';
+                console.error('Load results error:', error);
+            });
+        });
+
+        // Auto-hide alerts after 5 seconds
+        setTimeout(() => {
+            hideAllMessages();
+        }, 5000);
+
+        // Enter key support for email sharing
+        document.getElementById('share-email').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                shareQuiz();
+            }
+        });
+    </script>
+</body>
+</html>
