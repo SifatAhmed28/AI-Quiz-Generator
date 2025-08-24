@@ -30,9 +30,8 @@ An intelligent quiz generation platform that transforms your study materials int
 ```
 quiz-app/
 ├── app.py              # Main Flask application entry point
-├── config.py           # Configuration settings (development/production)
 ├── models.py           # Database models (User, Quiz, etc.)
-├── auth.py             # Authentication routes and logic
+├── init_db.py          # Creating database
 ├── requirements.txt    # Python dependencies
 ├── Procfile           # Deployment configuration for Heroku
 ├── .env               # Environment variables (API keys, secrets)
@@ -41,9 +40,13 @@ quiz-app/
 │   ├── css/          # Stylesheets
 │   └── js/           # JavaScript files
 └── templates/         # Jinja2 HTML templates
-    ├── base.html     # Base template with common layout
+    ├── login.html     # User login
+    ├── signup.html    # User sign up
     ├── index.html    # Home page
+    ├── results.html  # see the score
     ├── login.html    # User login form
+    ├── profile.html  # User profile
+    ├── 404.html      # handling error
     └── quiz.html     # Quiz interface
 ```
 
