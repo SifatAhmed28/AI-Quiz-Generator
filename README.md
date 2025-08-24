@@ -36,9 +36,6 @@ quiz-app/
 ├── Procfile           # Deployment configuration for Heroku
 ├── .env               # Environment variables (API keys, secrets)
 ├── .gitignore         # Git ignore rules
-├── static/            # Static assets
-│   ├── css/          # Stylesheets
-│   └── js/           # JavaScript files
 └── templates/         # Jinja2 HTML templates
     ├── login.html     # User login
     ├── signup.html    # User sign up
