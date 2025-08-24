@@ -135,7 +135,7 @@ MAX_CONTENT_LENGTH=16777216  # 16MB file upload limit
      - 📃 Word documents (.docx)
 
 ### 3. **Generate Quiz**
-   - Choose the number of questions (1-50)
+   - Choose the number of questions (1-30)
    - Set time limit for the quiz
    - Click "Generate Quiz" to create your personalized quiz
 
@@ -151,7 +151,7 @@ MAX_CONTENT_LENGTH=16777216  # 16MB file upload limit
 
 ## 🔧 Configuration
 
-### Flask Configuration (`config.py`)
+### Flask Configuration (`app.py`)
 
 ```python
 import os
